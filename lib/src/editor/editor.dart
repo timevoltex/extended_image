@@ -16,7 +16,8 @@ import 'editor_utils.dart';
 ///
 
 class ExtendedImageEditor extends StatefulWidget {
-  ExtendedImageEditor({required this.extendedImageState, Key? key})
+  ExtendedImageEditor(
+      {required this.extendedImageState, Key? key, bool onlyRoatate = false})
       : assert(extendedImageState.imageWidget.fit == BoxFit.contain,
             'Make sure the image is all painted to crop,the fit of image must be BoxFit.contain'),
         assert(extendedImageState.imageWidget.image is ExtendedImageProvider,
@@ -108,69 +109,72 @@ class ExtendedImageEditorState extends State<ExtendedImageEditor> {
         child: Stack(
           children: <Widget>[
             Positioned.fill(child: image),
-            Positioned.fill(
-              child: LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                Rect layoutRect = Offset.zero &
-                    Size(constraints.maxWidth, constraints.maxHeight);
-                final EdgeInsets padding = _editorConfig!.cropRectPadding;
+            if (!widget.onlyRotate)
+              {
+                Positioned.fill(
+                  child: LayoutBuilder(builder:
+                      (BuildContext context, BoxConstraints constraints) {
+                    Rect layoutRect = Offset.zero &
+                        Size(constraints.maxWidth, constraints.maxHeight);
+                    final EdgeInsets padding = _editorConfig!.cropRectPadding;
 
-                layoutRect = padding.deflateRect(layoutRect);
+                    layoutRect = padding.deflateRect(layoutRect);
 
-                if (_editActionDetails!.cropRect == null) {
-                  final AlignmentGeometry alignment =
-                      widget.extendedImageState.imageWidget.alignment;
-                  //matchTextDirection: extendedImage.matchTextDirection,
-                  //don't support TextDirection for editor
-                  final TextDirection? textDirection =
-                      //extendedImage.matchTextDirection ||
-                      alignment is! Alignment
-                          ? Directionality.of(context)
-                          : null;
-                  final Alignment resolvedAlignment =
-                      alignment.resolve(textDirection);
-                  final Rect destinationRect = getDestinationRect(
-                      rect: layoutRect,
-                      inputSize: Size(
-                          widget
-                              .extendedImageState.extendedImageInfo!.image.width
-                              .toDouble(),
-                          widget.extendedImageState.extendedImageInfo!.image
-                              .height
-                              .toDouble()),
-                      flipHorizontally: false,
-                      fit: widget.extendedImageState.imageWidget.fit,
-                      centerSlice:
-                          widget.extendedImageState.imageWidget.centerSlice,
-                      alignment: resolvedAlignment,
-                      scale:
-                          widget.extendedImageState.extendedImageInfo!.scale);
+                    if (_editActionDetails!.cropRect == null) {
+                      final AlignmentGeometry alignment =
+                          widget.extendedImageState.imageWidget.alignment;
+                      //matchTextDirection: extendedImage.matchTextDirection,
+                      //don't support TextDirection for editor
+                      final TextDirection? textDirection =
+                          //extendedImage.matchTextDirection ||
+                          alignment is! Alignment
+                              ? Directionality.of(context)
+                              : null;
+                      final Alignment resolvedAlignment =
+                          alignment.resolve(textDirection);
+                      final Rect destinationRect = getDestinationRect(
+                          rect: layoutRect,
+                          inputSize: Size(
+                              widget.extendedImageState.extendedImageInfo!.image
+                                  .width
+                                  .toDouble(),
+                              widget.extendedImageState.extendedImageInfo!.image
+                                  .height
+                                  .toDouble()),
+                          flipHorizontally: false,
+                          fit: widget.extendedImageState.imageWidget.fit,
+                          centerSlice:
+                              widget.extendedImageState.imageWidget.centerSlice,
+                          alignment: resolvedAlignment,
+                          scale: widget
+                              .extendedImageState.extendedImageInfo!.scale);
 
-                  Rect cropRect = _initCropRect(destinationRect);
-                  if (_editorConfig!.initCropRectType ==
-                          InitCropRectType.layoutRect &&
-                      _editorConfig!.cropAspectRatio != null &&
-                      _editorConfig!.cropAspectRatio! > 0) {
-                    final Rect rect = _initCropRect(layoutRect);
-                    _editActionDetails!.totalScale = _editActionDetails!
-                        .preTotalScale = destinationRect.width
-                            .greaterThan(destinationRect.height)
-                        ? rect.height / cropRect.height
-                        : rect.width / cropRect.width;
-                    cropRect = rect;
-                  }
-                  _editActionDetails!.cropRect = cropRect;
-                }
+                      Rect cropRect = _initCropRect(destinationRect);
+                      if (_editorConfig!.initCropRectType ==
+                              InitCropRectType.layoutRect &&
+                          _editorConfig!.cropAspectRatio != null &&
+                          _editorConfig!.cropAspectRatio! > 0) {
+                        final Rect rect = _initCropRect(layoutRect);
+                        _editActionDetails!.totalScale = _editActionDetails!
+                            .preTotalScale = destinationRect.width
+                                .greaterThan(destinationRect.height)
+                            ? rect.height / cropRect.height
+                            : rect.width / cropRect.width;
+                        cropRect = rect;
+                      }
+                      _editActionDetails!.cropRect = cropRect;
+                    }
 
-                return ExtendedImageCropLayer(
-                  _editActionDetails!,
-                  _editorConfig!,
-                  layoutRect,
-                  key: _layerKey,
-                  fit: BoxFit.contain,
-                );
-              }),
-            ),
+                    return ExtendedImageCropLayer(
+                      _editActionDetails!,
+                      _editorConfig!,
+                      layoutRect,
+                      key: _layerKey,
+                      fit: BoxFit.contain,
+                    );
+                  }),
+                ),
+              }
           ],
         ));
     result = Listener(

@@ -54,6 +54,7 @@ class ExtendedImage extends StatefulWidget {
     this.extendedImageGestureKey,
     this.isAntiAlias = false,
     this.handleLoadingProgress = false,
+    this.onlyRoatate = false,
   })  : assert(constraints == null || constraints.debugAssertIsValid()),
         constraints = (width != null || height != null)
             ? constraints?.tighten(width: width, height: height) ??
@@ -226,6 +227,7 @@ class ExtendedImage extends StatefulWidget {
     this.heroBuilderForSlidingPage,
     this.clearMemoryCacheWhenDispose = false,
     this.extendedImageGestureKey,
+    this.onlyRoatate = false,
     int? cacheWidth,
     int? cacheHeight,
     this.isAntiAlias = false,
@@ -322,6 +324,7 @@ class ExtendedImage extends StatefulWidget {
     this.heroBuilderForSlidingPage,
     this.clearMemoryCacheWhenDispose = false,
     this.extendedImageGestureKey,
+    this.onlyRotate = false,
     int? cacheWidth,
     int? cacheHeight,
     this.isAntiAlias = false,
@@ -412,6 +415,7 @@ class ExtendedImage extends StatefulWidget {
     this.heroBuilderForSlidingPage,
     this.clearMemoryCacheWhenDispose = false,
     this.extendedImageGestureKey,
+    this.onlyRotate = false,
     int? cacheWidth,
     int? cacheHeight,
     this.isAntiAlias = false,
@@ -490,6 +494,7 @@ class ExtendedImage extends StatefulWidget {
     int? cacheWidth,
     int? cacheHeight,
     this.isAntiAlias = false,
+    this.onlyRotate = false,
     String? cacheKey,
     bool printError = true,
     double? compressionRatio,
@@ -533,6 +538,8 @@ class ExtendedImage extends StatefulWidget {
 
   /// key of ExtendedImageGesture
   final Key? extendedImageGestureKey;
+
+  final bool onlyRotate;
 
   /// whether handle loading progress for network
   final bool handleLoadingProgress;
@@ -1135,13 +1142,12 @@ class _ExtendedImageState extends State<ExtendedImage>
         this,
         key: widget.extendedImageGestureKey,
       );
-    } else if (widget.mode == ExtendedImageMode.editor) {
+    } else {
       current = ExtendedImageEditor(
         extendedImageState: this,
         key: widget.extendedImageEditorKey,
+        onlyRoatate: widget.onlyRoatate,
       );
-    } else {
-      current = _buildExtendedRawImage();
     }
     return current;
   }
